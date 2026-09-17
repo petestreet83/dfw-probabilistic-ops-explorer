@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
-
 from ..db import get_connection
 from .base import AdapterResult, PublicDataAdapter
 
@@ -25,7 +23,7 @@ class BtsHistoricalAdapter(PublicDataAdapter):
                        COALESCE(carrier_delay_minutes, 0) AS carrier_delay_minutes,
                        COALESCE(weather_delay_minutes, 0) AS weather_delay_minutes,
                        COALESCE(nas_delay_minutes, 0) AS nas_delay_minutes,
-                       cache_timestamp, source_url
+                       source_timestamp, cache_timestamp, source_url
                 FROM bts_flights
                 {where}
                 ORDER BY flight_date DESC
@@ -41,6 +39,8 @@ class BtsHistoricalAdapter(PublicDataAdapter):
                 mode="DEGRADED",
                 payload={"records": [], "high_risk": [], "risk_map_points": []},
                 message="No cached BTS historical data loaded yet.",
+                source_url="https://www.transtats.bts.gov/",
+                confidence=0.2,
             )
 
         records = []
@@ -61,6 +61,7 @@ class BtsHistoricalAdapter(PublicDataAdapter):
                     "weather_delay_minutes": row["weather_delay_minutes"],
                     "nas_delay_minutes": row["nas_delay_minutes"],
                     "risk_score": round(risk_score, 3),
+                    "source_timestamp": row["source_timestamp"],
                     "cache_timestamp": row["cache_timestamp"],
                     "source_url": row["source_url"],
                 }
@@ -81,6 +82,9 @@ class BtsHistoricalAdapter(PublicDataAdapter):
             for rec in records
         ]
 
+        newest_source_timestamp = max((record["source_timestamp"] for record in records if record["source_timestamp"]), default=None)
+        newest_cache_timestamp = max((record["cache_timestamp"] for record in records if record["cache_timestamp"]), default=None)
+
         return AdapterResult(
             source_name=self.source_name,
             available=True,
@@ -89,7 +93,10 @@ class BtsHistoricalAdapter(PublicDataAdapter):
                 "records": records,
                 "high_risk": high_risk,
                 "risk_map_points": risk_map_points,
-                "source_timestamp": datetime.now(timezone.utc).isoformat(),
             },
             message="Historical public-data benchmark loaded from cache.",
+            source_url=records[0]["source_url"],
+            source_timestamp=newest_source_timestamp,
+            cache_timestamp=newest_cache_timestamp,
+            confidence=0.75,
         )

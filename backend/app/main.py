@@ -8,7 +8,7 @@ from .adapters.faa_stub import FaaAspmStubAdapter
 from .adapters.noaa_awc import NoaaAwcAdapter
 from .adapters.opensky_stub import OpenSkyStubAdapter
 from .config import get_settings
-from .db import age_minutes, initialize_db
+from .db import age_minutes, initialize_db, iso_to_dt
 from .models import DataMode, DashboardResponse, Provenance, RiskMapPoint, RippleEdge, SourceKind, SourceStatus, SourcedValue, now_utc
 
 app = FastAPI(title="DFW Probabilistic Operations Explorer API", version="0.1.0")
@@ -16,8 +16,8 @@ settings = get_settings()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
+    allow_origins=settings.cors_origins,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -58,28 +58,8 @@ def dashboard(
     taf_count = len(awc.payload.get("taf", []))
     high_risk = bts.payload.get("high_risk", [])
 
-    weather_prov = Provenance(
-        source_system="NOAA AWC",
-        source_url=awc.payload.get("source_urls", {}).get("metar", "https://aviationweather.gov/"),
-        source_timestamp=now,
-        cache_timestamp=now,
-        cache_age_minutes=awc.payload.get("cache_age_minutes"),
-        data_mode=DataMode(awc.mode),
-        confidence=0.9 if awc.available else 0.2,
-        source_kind=SourceKind.OBSERVATION,
-    )
-    bts_url = high_risk[0]["source_url"] if high_risk else "https://www.transtats.bts.gov/"
-    bts_cache_ts = high_risk[0]["cache_timestamp"] if high_risk else None
-    bts_prov = Provenance(
-        source_system="BTS",
-        source_url=bts_url,
-        source_timestamp=now,
-        cache_timestamp=bts_cache_ts,
-        cache_age_minutes=age_minutes(bts_cache_ts),
-        data_mode=DataMode(bts.mode),
-        confidence=0.75 if bts.available else 0.2,
-        source_kind=SourceKind.HISTORICAL,
-    )
+    weather_prov = _provenance_from_adapter(awc, SourceKind.OBSERVATION)
+    bts_prov = _provenance_from_adapter(bts, SourceKind.HISTORICAL)
 
     overview_metrics = [
         SourcedValue(
@@ -174,22 +154,27 @@ def dashboard(
 
 
 def _status_from_result(result, source_url: str, source_kind: SourceKind) -> SourceStatus:
-    mode = DataMode(result.mode)
+    provenance = _provenance_from_adapter(result, source_kind)
     return SourceStatus(
         source_name=result.source_name,
         available=result.available,
-        mode=mode,
+        mode=provenance.data_mode,
         status_label="OK" if result.available else "UNAVAILABLE/STALE/CACHED-ONLY",
-        last_success_at=now_utc() if result.available else None,
+        last_success_at=provenance.cache_timestamp if result.available else None,
         message=result.message,
-        provenance=Provenance(
-            source_system=result.source_name,
-            source_url=source_url,
-            source_timestamp=now_utc(),
-            cache_timestamp=now_utc() if result.available else None,
-            cache_age_minutes=0.0 if result.available else None,
-            data_mode=mode,
-            confidence=0.85 if result.available else 0.2,
-            source_kind=source_kind,
-        ),
+        provenance=provenance.model_copy(update={"source_url": source_url or provenance.source_url}),
+    )
+
+
+def _provenance_from_adapter(result, source_kind: SourceKind) -> Provenance:
+    mode = DataMode(result.mode)
+    return Provenance(
+        source_system=result.source_name,
+        source_url=result.source_url,
+        source_timestamp=iso_to_dt(result.source_timestamp),
+        cache_timestamp=iso_to_dt(result.cache_timestamp),
+        cache_age_minutes=result.cache_age_minutes if result.cache_age_minutes is not None else age_minutes(result.cache_timestamp),
+        data_mode=mode,
+        confidence=result.confidence,
+        source_kind=source_kind,
     )

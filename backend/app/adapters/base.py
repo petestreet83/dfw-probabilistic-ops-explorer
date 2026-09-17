@@ -11,6 +11,11 @@ class AdapterResult:
     mode: str
     payload: dict[str, Any]
     message: str
+    source_url: str
+    source_timestamp: str | None = None
+    cache_timestamp: str | None = None
+    cache_age_minutes: float | None = None
+    confidence: float = 0.5
 
 
 class PublicDataAdapter:

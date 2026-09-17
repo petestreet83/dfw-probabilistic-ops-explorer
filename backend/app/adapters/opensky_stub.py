@@ -13,4 +13,6 @@ class OpenSkyStubAdapter(PublicDataAdapter):
             mode="DEGRADED",
             payload={"status": "UNAVAILABLE/STALE/CACHED-ONLY", "records": []},
             message="Stub adapter only in Phase 1. Integrate OpenSky public trajectories in next phase.",
+            source_url="https://opensky-network.org/",
+            confidence=0.2,
         )

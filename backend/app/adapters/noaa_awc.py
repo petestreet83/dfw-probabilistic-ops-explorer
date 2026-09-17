@@ -65,6 +65,10 @@ class NoaaAwcAdapter(PublicDataAdapter):
             "data_mode": "LIVE PUBLIC DATA",
             "source_urls": {"metar": metar_url, "taf": taf_url},
             "cache_timestamp": now_iso,
+            "source_timestamp": (
+                (metar_data[0].get("obsTime") if isinstance(metar_data, list) and metar_data else None)
+                or (taf_data[0].get("issueTime") if isinstance(taf_data, list) and taf_data else None)
+            ),
         }
 
     def _fetch_cached(self, airport: str) -> dict[str, Any] | None:
@@ -111,6 +115,7 @@ class NoaaAwcAdapter(PublicDataAdapter):
             },
             "cache_timestamp": newest_ts,
             "cache_age_minutes": age_minutes(newest_ts),
+            "source_timestamp": newest_ts,
         }
 
     def fetch(self, airport: str) -> AdapterResult:
@@ -122,6 +127,11 @@ class NoaaAwcAdapter(PublicDataAdapter):
                 mode="LIVE PUBLIC DATA",
                 payload=payload,
                 message="Live public weather observation and forecast fetched.",
+                source_url=payload["source_urls"]["metar"],
+                source_timestamp=payload.get("source_timestamp"),
+                cache_timestamp=payload.get("cache_timestamp"),
+                cache_age_minutes=0.0,
+                confidence=0.9,
             )
         except Exception as exc:
             cached = self._fetch_cached(airport)
@@ -132,6 +142,11 @@ class NoaaAwcAdapter(PublicDataAdapter):
                     mode="CACHED PUBLIC DATA",
                     payload=cached,
                     message=f"Live NOAA AWC unavailable, using cached fallback: {exc}",
+                    source_url=cached["source_urls"]["metar"],
+                    source_timestamp=cached.get("source_timestamp"),
+                    cache_timestamp=cached.get("cache_timestamp"),
+                    cache_age_minutes=cached.get("cache_age_minutes"),
+                    confidence=0.75,
                 )
             return AdapterResult(
                 source_name=self.source_name,
@@ -139,4 +154,6 @@ class NoaaAwcAdapter(PublicDataAdapter):
                 mode="DEGRADED",
                 payload={"airport": airport, "metar": [], "taf": [], "data_mode": "DEGRADED"},
                 message=f"NOAA AWC unavailable and no cache present: {exc}",
+                source_url="https://aviationweather.gov/",
+                confidence=0.2,
             )
