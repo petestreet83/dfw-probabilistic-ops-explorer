@@ -1,4 +1,3 @@
-from functools import lru_cache
 from pathlib import Path
 
 from pydantic import Field
@@ -13,6 +12,5 @@ class Settings(BaseSettings):
     cors_origins: list[str] = Field(default=["http://localhost:3000"])
 
 
-@lru_cache
 def get_settings() -> Settings:
     return Settings()

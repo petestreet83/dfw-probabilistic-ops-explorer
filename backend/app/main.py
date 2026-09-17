@@ -12,11 +12,10 @@ from .db import age_minutes, initialize_db, iso_to_dt
 from .models import DataMode, DashboardResponse, Provenance, RiskMapPoint, RippleEdge, SourceKind, SourceStatus, SourcedValue, now_utc
 
 app = FastAPI(title="DFW Probabilistic Operations Explorer API", version="0.1.0")
-settings = get_settings()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
+    allow_origins=get_settings().cors_origins,
     allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -38,17 +37,20 @@ def dashboard(
     operation: str = Query("all", pattern="^(all|inbound|outbound)$"),
     horizon: str = Query("now", pattern="^(now|2h|6h|12h|24h)$"),
 ):
+    settings = get_settings()
     awc = NoaaAwcAdapter().fetch(settings.default_airport)
     bts = BtsHistoricalAdapter().fetch(operation)
     faa = FaaAspmStubAdapter().fetch()
     opensky = OpenSkyStubAdapter().fetch()
 
-    available_modes = {result.mode for result in (awc, bts, faa, opensky) if result.available}
-    if available_modes == {"LIVE PUBLIC DATA"}:
+    source_modes = {result.mode for result in (awc, bts, faa, opensky)}
+    if "DEGRADED" in source_modes:
+        global_mode = DataMode.DEGRADED
+    elif source_modes == {"LIVE PUBLIC DATA"}:
         global_mode = DataMode.LIVE
-    elif "LIVE PUBLIC DATA" in available_modes and "CACHED PUBLIC DATA" in available_modes:
+    elif "LIVE PUBLIC DATA" in source_modes and "CACHED PUBLIC DATA" in source_modes:
         global_mode = DataMode.MIXED
-    elif "CACHED PUBLIC DATA" in available_modes and "LIVE PUBLIC DATA" not in available_modes:
+    elif source_modes == {"CACHED PUBLIC DATA"}:
         global_mode = DataMode.CACHED
     else:
         global_mode = DataMode.DEGRADED
