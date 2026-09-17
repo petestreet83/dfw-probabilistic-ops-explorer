@@ -12,7 +12,10 @@ export function SourceStatusConsole({ sources }: { sources: SourceStatus[] }) {
           >
             <div className="flex items-center justify-between">
               <p className="font-semibold">{source.source_name}</p>
-              <span className="rounded bg-zinc-800 px-2 py-1 text-xs">{source.status_label}</span>
+              <span role="status" aria-live="polite" className="rounded bg-zinc-800 px-2 py-1 text-xs">
+                {source.status_label}
+                <span className="sr-only">: {source.available ? "source available" : "source unavailable"}</span>
+              </span>
             </div>
             <p className="text-xs text-zinc-300">{source.message}</p>
             <p className="mt-1 text-xs text-zinc-500">

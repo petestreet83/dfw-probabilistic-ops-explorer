@@ -43,12 +43,12 @@ def dashboard(
     faa = FaaAspmStubAdapter().fetch()
     opensky = OpenSkyStubAdapter().fetch()
 
-    modes = {awc.mode, bts.mode, faa.mode, opensky.mode}
-    if modes == {"LIVE PUBLIC DATA"}:
+    available_modes = {result.mode for result in (awc, bts, faa, opensky) if result.available}
+    if available_modes == {"LIVE PUBLIC DATA"}:
         global_mode = DataMode.LIVE
-    elif "LIVE PUBLIC DATA" in modes and "CACHED PUBLIC DATA" in modes:
+    elif "LIVE PUBLIC DATA" in available_modes and "CACHED PUBLIC DATA" in available_modes:
         global_mode = DataMode.MIXED
-    elif "CACHED PUBLIC DATA" in modes and "LIVE PUBLIC DATA" not in modes:
+    elif "CACHED PUBLIC DATA" in available_modes and "LIVE PUBLIC DATA" not in available_modes:
         global_mode = DataMode.CACHED
     else:
         global_mode = DataMode.DEGRADED

@@ -21,7 +21,7 @@ export function HighRiskTable({ flights }: { flights: Array<Record<string, unkno
               </tr>
             ) : (
               flights.map((flight) => (
-                <tr key={String(flight.flight_id)} className="border-t border-zinc-800">
+                <tr key={`${String(flight.flight_id)}-${String(flight.route)}-${String(flight.cache_timestamp)}`} className="border-t border-zinc-800">
                   <td className="p-2">{String(flight.flight_id)}</td>
                   <td className="p-2">{String(flight.route)}</td>
                   <td className="p-2">{String(flight.risk_score)}</td>

@@ -12,7 +12,7 @@ Public-data-only foundation for probabilistic DFW delay/ripple analytics.
 
 ### Backend
 ```bash
-cd /home/runner/work/dfw-probabilistic-ops-explorer/dfw-probabilistic-ops-explorer/backend
+cd backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -21,14 +21,14 @@ uvicorn app.main:app --reload
 
 ### Frontend
 ```bash
-cd /home/runner/work/dfw-probabilistic-ops-explorer/dfw-probabilistic-ops-explorer/frontend
+cd frontend
 npm install
 NEXT_PUBLIC_API_BASE_URL=http://localhost:8000 npm run dev
 ```
 
 ### Load BTS cache data
 ```bash
-cd /home/runner/work/dfw-probabilistic-ops-explorer/dfw-probabilistic-ops-explorer
+# from repository root
 python scripts/load_bts_cache.py /absolute/path/to/public_bts_export.csv
 ```
 
