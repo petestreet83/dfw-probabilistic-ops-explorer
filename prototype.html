@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DFW Probabilistic Ops Explorer Prototype</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cytoscape@3.30.3/dist/cytoscape.min.js"></script>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #131c2f;
+      --panel-2: #1a2439;
+      --text: #e9f1ff;
+      --muted: #9db0ce;
+      --live: #28b6ff;
+      --teal: #2dd4bf;
+      --monitor: #facc15;
+      --elevated: #fb923c;
+      --tail: #ef4444;
+      --stale: repeating-linear-gradient(45deg, #475569, #475569 5px, #334155 5px, #334155 10px);
+      --border: #27344f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top right, #16213a, var(--bg) 52%);
+      color: var(--text);
+    }
+    .app { max-width: 1400px; margin: 0 auto; padding: 12px; }
+    .top {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1.3fr 2fr;
+      margin-bottom: 10px;
+    }
+    .panel {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+    }
+    h1 { font-size: 1.1rem; margin: 0 0 6px; }
+    h2 { font-size: 1rem; margin: 0 0 8px; }
+    h3 { font-size: 0.9rem; margin: 8px 0; }
+    .small { font-size: 0.8rem; color: var(--muted); }
+    .badge {
+      display: inline-block;
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      margin-right: 6px;
+      margin-bottom: 6px;
+      border: 1px solid rgba(255,255,255,0.15);
+    }
+    .badge.live { background: rgba(40,182,255,.2); color: #9ee4ff; }
+    .badge.cached { background: rgba(45,212,191,.2); color: #8ff5e7; }
+    .badge.mixed { background: rgba(250,204,21,.2); color: #fde47a; }
+    .badge.degraded { background: rgba(239,68,68,.25); color: #ffc4c4; }
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 8px;
+    }
+    label { font-size: 0.72rem; color: var(--muted); display: block; margin-bottom: 3px; }
+    select, button {
+      width: 100%;
+      background: #0f172a;
+      color: var(--text);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+    }
+    .horizon {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .horizon button.active,
+    .tabs button.active {
+      border-color: var(--live);
+      background: rgba(40,182,255,.15);
+      color: #b8edff;
+    }
+    .tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .tab {
+      display: none;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+    }
+    .tab.active { display: grid; }
+    .kpi-grid, .status-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .kpi, .status {
+      background: rgba(10,16,30,.55);
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 8px;
+    }
+    .kpi .v { font-size: 1.1rem; font-weight: 700; }
+    .status[data-state="AVAILABLE"] { border-color: var(--teal); }
+    .status[data-state="STALE"] { background: var(--stale); }
+    .status[data-state="UNAVAILABLE"] { border-color: var(--tail); }
+    .full { grid-column: 1 / -1; }
+    .legend { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.75rem; color: var(--muted); }
+    .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid #334155; padding: 6px; text-align: left; font-size: 0.8rem; }
+    tr:hover { background: rgba(148,163,184,.12); cursor: pointer; }
+    .conf { font-weight: 700; font-size: 0.72rem; }
+    .conf.high { color: var(--teal); }
+    .conf.medium { color: var(--monitor); }
+    .conf.low { color: var(--elevated); }
+    #riskMap svg, #violinPlot svg { width: 100%; height: auto; }
+    #cy { height: 320px; border: 1px solid #334155; border-radius: 8px; background: #0b1326; }
+    footer {
+      margin-top: 12px;
+      font-size: 0.76rem;
+      color: #d5def0;
+      background: rgba(13,20,35,.85);
+      border: 1px solid #3b4a6a;
+      border-radius: 10px;
+      padding: 10px;
+    }
+    @media (max-width: 980px) {
+      .top, .tab, .kpi-grid, .status-grid, .controls { grid-template-columns: 1fr 1fr; }
+      .tabs { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 680px) {
+      .top, .tab, .kpi-grid, .status-grid, .controls, .tabs { grid-template-columns: 1fr; }
+      .horizon { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="top">
+    <section class="panel">
+      <h1>DFW Probabilistic Operations Explorer</h1>
+      <div id="globalBadge" class="badge mixed">MODE: MIXED</div>
+      <div class="small" id="summaryText">Prototype initialized.</div>
+      <div style="margin-top:8px">
+        <span class="badge live">public-trajectory</span>
+        <span class="badge mixed">inferred-ripple</span>
+        <span class="badge cached">carrier-delay-proxy</span>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="controls">
+        <div>
+          <label for="dataMode">Data Mode</label>
+          <select id="dataMode">
+            <option value="LIVE">Live Public Data</option>
+            <option value="CACHED">Cached Public Data</option>
+            <option value="DEGRADED">Degraded</option>
+          </select>
+        </div>
+        <div>
+          <label for="carrierFilter">Carrier</label>
+          <select id="carrierFilter"><option value="ALL">All</option></select>
+        </div>
+        <div>
+          <label for="routeFilter">Route</label>
+          <select id="routeFilter"><option value="ALL">All</option></select>
+        </div>
+        <div>
+          <label for="directionFilter">Direction</label>
+          <select id="directionFilter">
+            <option value="ALL">All</option><option value="Inbound">Inbound</option><option value="Outbound">Outbound</option>
+          </select>
+        </div>
+      </div>
+      <div class="controls" style="margin-top:8px;grid-template-columns:1fr;">
+        <div>
+          <label for="delayThreshold">Delay Threshold (minutes)</label>
+          <select id="delayThreshold">
+            <option value="0">0+</option>
+            <option value="15" selected>15+</option>
+            <option value="30">30+</option>
+            <option value="45">45+</option>
+            <option value="60">60+</option>
+          </select>
+        </div>
+      </div>
+      <div class="horizon" id="horizonButtons"></div>
+    </section>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <section id="tab-Executive Overview" class="tab active"></section>
+  <section id="tab-Probabilistic Risk Map" class="tab"></section>
+  <section id="tab-Dynamic Probability Horizon" class="tab"></section>
+  <section id="tab-Trajectory Density Cross-Section Inspector" class="tab"></section>
+  <section id="tab-Risk Migration Monitor" class="tab"></section>
+  <section id="tab-Ripple Dependency Explorer" class="tab"></section>
+  <section id="tab-Route &amp; Weather Corridor Map" class="tab"></section>
+  <section id="tab-Carrier &amp; Route Reliability Ranking" class="tab"></section>
+  <section id="tab-Data Quality Source Console" class="tab"></section>
+
+  <footer>
+    This application uses only live public data and cached public data. It does not include proprietary operational systems, and derived risk/ripple outputs are probabilistic guidance only. Carrier delays are a public-data proxy, ripple links are inferred, and trajectory context is based on public trajectory samples.
+  </footer>
+</div>
+
+<script>
+const mock = {
+  btsFlights: [
+    {carrier:'AA', route:'LAX-DFW', direction:'Inbound', delay:42, cancelled:0, dep:'17:00', arr:'22:11'},
+    {carrier:'AA', route:'DFW-JFK', direction:'Outbound', delay:18, cancelled:0, dep:'18:05', arr:'22:42'},
+    {carrier:'WN', route:'HOU-DFW', direction:'Inbound', delay:9, cancelled:0, dep:'17:20', arr:'18:40'},
+    {carrier:'DL', route:'ATL-DFW', direction:'Inbound', delay:51, cancelled:0, dep:'16:10', arr:'18:26'},
+    {carrier:'UA', route:'ORD-DFW', direction:'Inbound', delay:33, cancelled:0, dep:'17:45', arr:'20:04'},
+    {carrier:'UA', route:'DFW-DEN', direction:'Outbound', delay:27, cancelled:0, dep:'19:00', arr:'20:54'},
+    {carrier:'AS', route:'SEA-DFW', direction:'Inbound', delay:14, cancelled:0, dep:'15:20', arr:'20:12'},
+    {carrier:'B6', route:'DFW-BOS', direction:'Outbound', delay:64, cancelled:0, dep:'18:20', arr:'23:40'},
+    {carrier:'AA', route:'DFW-MIA', direction:'Outbound', delay:48, cancelled:0, dep:'19:05', arr:'22:30'},
+    {carrier:'WN', route:'DFW-PHX', direction:'Outbound', delay:22, cancelled:0, dep:'18:45', arr:'20:03'},
+    {carrier:'DL', route:'DFW-SLC', direction:'Outbound', delay:5, cancelled:0, dep:'17:30', arr:'19:55'},
+    {carrier:'AA', route:'PHX-DFW', direction:'Inbound', delay:37, cancelled:0, dep:'16:25', arr:'20:10'},
+    {carrier:'UA', route:'IAD-DFW', direction:'Inbound', delay:58, cancelled:0, dep:'15:55', arr:'18:45'}
+  ],
+  noaa: {
+    metar: 'KDFW 181753Z 16018G26KT 10SM SCT035 BKN120 31/22 A2983 RMK AO2',
+    taf: 'KDFW 181720Z 1818/1924 16016G24KT P6SM SCT040 BKN110 TEMPO 1821/1901 TSRA BKN040CB',
+    runwayWindImpact: 0.67,
+    convectiveRisk: 0.58,
+    cacheAgeMin: 6
+  },
+  faa: {
+    aspmFlowProgram: 'GDP WATCH',
+    arrivalRatePerHour: 96,
+    departureRatePerHour: 92,
+    constraintLevel: 'MODERATE',
+    cacheAgeMin: 18
+  },
+  probability: {
+    horizons: {
+      'Now': 0.44,
+      '+2h': 0.56,
+      '+6h': 0.69,
+      '+12h': 0.48,
+      '+24h': 0.36
+    },
+    distributions: {
+      'Now': [4,8,12,15,17,19,23,28,34,40,42,50,63],
+      '+2h': [8,10,14,17,20,24,29,33,40,47,55,68,76],
+      '+6h': [12,15,18,22,30,37,44,53,61,70,79,88,95],
+      '+12h': [7,10,14,18,22,25,31,37,43,50,57,64,71],
+      '+24h': [4,6,9,12,15,19,23,27,31,36,40,46,52]
+    }
+  },
+  rippleEdges: [
+    {source:'LAX-DFW', target:'DFW-JFK', weight:0.61},
+    {source:'ATL-DFW', target:'DFW-MIA', weight:0.73},
+    {source:'ORD-DFW', target:'DFW-DEN', weight:0.56},
+    {source:'PHX-DFW', target:'DFW-PHX', weight:0.68},
+    {source:'IAD-DFW', target:'DFW-BOS', weight:0.78}
+  ],
+  sourceStatus: [
+    {metric:'NOAA METAR', state:'AVAILABLE', cacheAge:'6m', confidence:'high'},
+    {metric:'NOAA TAF', state:'AVAILABLE', cacheAge:'9m', confidence:'high'},
+    {metric:'FAA ASPM Context', state:'STALE', cacheAge:'18m', confidence:'medium'},
+    {metric:'BTS Delay Baseline', state:'AVAILABLE', cacheAge:'1d', confidence:'high'},
+    {metric:'Public Trajectory Feed', state:'UNAVAILABLE', cacheAge:'N/A', confidence:'low'}
+  ]
+};
+
+const tabs = [
+  'Executive Overview',
+  'Probabilistic Risk Map',
+  'Dynamic Probability Horizon',
+  'Trajectory Density Cross-Section Inspector',
+  'Risk Migration Monitor',
+  'Ripple Dependency Explorer',
+  'Route & Weather Corridor Map',
+  'Carrier & Route Reliability Ranking',
+  'Data Quality Source Console'
+];
+
+const state = {
+  tab: tabs[0],
+  dataMode: 'LIVE',
+  horizon: 'Now',
+  carrier: 'ALL',
+  route: 'ALL',
+  direction: 'ALL',
+  delayThreshold: 15,
+  selectedRoute: null
+};
+
+const charts = {};
+let cy;
+
+function init() {
+  initControls();
+  initTabs();
+  renderStaticTabFrames();
+  updateAll();
+}
+
+function initControls() {
+  const carriers = [...new Set(mock.btsFlights.map(f => f.carrier))];
+  const routes = [...new Set(mock.btsFlights.map(f => f.route))];
+
+  const carrierSel = document.getElementById('carrierFilter');
+  carriers.forEach(c => carrierSel.insertAdjacentHTML('beforeend', `<option value="${c}">${c}</option>`));
+  const routeSel = document.getElementById('routeFilter');
+  routes.forEach(r => routeSel.insertAdjacentHTML('beforeend', `<option value="${r}">${r}</option>`));
+
+  ['dataMode','carrierFilter','routeFilter','directionFilter','delayThreshold'].forEach(id => {
+    document.getElementById(id).addEventListener('change', (e) => {
+      const val = e.target.value;
+      if (id === 'delayThreshold') state.delayThreshold = Number(val);
+      else if (id === 'dataMode') state.dataMode = val;
+      else if (id === 'carrierFilter') state.carrier = val;
+      else if (id === 'routeFilter') state.route = val;
+      else if (id === 'directionFilter') state.direction = val;
+      updateAll();
+    });
+  });
+
+  const hb = document.getElementById('horizonButtons');
+  Object.keys(mock.probability.horizons).forEach(h => {
+    const b = document.createElement('button');
+    b.textContent = h;
+    b.addEventListener('click', () => {
+      state.horizon = h;
+      updateAll();
+    });
+    hb.appendChild(b);
+  });
+}
+
+function initTabs() {
+  const tabsEl = document.getElementById('tabs');
+  tabs.forEach(name => {
+    const btn = document.createElement('button');
+    btn.textContent = name;
+    btn.addEventListener('click', () => {
+      state.tab = name;
+      updateActiveTab();
+    });
+    tabsEl.appendChild(btn);
+  });
+}
+
+function updateActiveTab() {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`tab-${state.tab}`).classList.add('active');
+  [...document.querySelectorAll('.tabs button')].forEach((b, i) => b.classList.toggle('active', tabs[i] === state.tab));
+}
+
+function filteredFlights() {
+  return mock.btsFlights.filter(f =>
+    (state.carrier === 'ALL' || f.carrier === state.carrier) &&
+    (state.route === 'ALL' || f.route === state.route) &&
+    (state.direction === 'ALL' || f.direction === state.direction) &&
+    f.delay >= state.delayThreshold
+  );
+}
+
+function currentModeBadge() {
+  const hasStale = mock.sourceStatus.some(s => s.state === 'STALE');
+  if (state.dataMode === 'DEGRADED') return 'DEGRADED';
+  if (state.dataMode === 'CACHED') return 'CACHED';
+  return hasStale ? 'MIXED' : 'LIVE';
+}
+
+function confidenceClass(v) {
+  return v >= 0.7 ? 'high' : v >= 0.45 ? 'medium' : 'low';
+}
+
+function renderStaticTabFrames() {
+  document.getElementById('tab-Executive Overview').innerHTML = `
+    <div class="panel full"><h2>Executive Overview</h2><div class="kpi-grid" id="overviewKpis"></div></div>
+    <div class="panel"><canvas id="carrierDelayChart"></canvas></div>
+    <div class="panel"><canvas id="horizonMiniChart"></canvas></div>
+  `;
+
+  document.getElementById('tab-Probabilistic Risk Map').innerHTML = `
+    <div class="panel"><h2>Probabilistic Risk Map</h2><div class="small">Click a route cell to cross-filter.</div><div id="riskMap"></div></div>
+    <div class="panel"><h2>Risk Contour Legend</h2><div class="legend">
+      <span><span class="dot" style="background:var(--teal)"></span>Normal</span>
+      <span><span class="dot" style="background:var(--monitor)"></span>Monitoring</span>
+      <span><span class="dot" style="background:var(--elevated)"></span>Elevated</span>
+      <span><span class="dot" style="background:var(--tail)"></span>Tail Risk</span>
+    </div><div id="riskSelection" class="small" style="margin-top:8px"></div></div>
+  `;
+
+  document.getElementById('tab-Dynamic Probability Horizon').innerHTML = `
+    <div class="panel full"><h2>Dynamic Probability Horizon</h2><canvas id="horizonChart"></canvas></div>
+    <div class="panel"><h3>Distribution Overlay</h3><canvas id="overlayChart"></canvas></div>
+    <div class="panel"><h3>Confidence Badges</h3><div id="horizonConfidence"></div></div>
+  `;
+
+  document.getElementById('tab-Trajectory Density Cross-Section Inspector').innerHTML = `
+    <div class="panel"><h2>Histogram</h2><canvas id="histChart"></canvas></div>
+    <div class="panel"><h2>ECDF</h2><canvas id="ecdfChart"></canvas></div>
+    <div class="panel full"><h2>Violin Plot</h2><div id="violinPlot"></div></div>
+  `;
+
+  document.getElementById('tab-Risk Migration Monitor').innerHTML = `
+    <div class="panel"><h2>Risk Migration Timeline</h2><canvas id="migrationChart"></canvas></div>
+    <div class="panel"><h2>Step Details</h2><table><thead><tr><th>Horizon</th><th>Risk</th><th>Confidence</th></tr></thead><tbody id="migrationRows"></tbody></table></div>
+  `;
+
+  document.getElementById('tab-Ripple Dependency Explorer').innerHTML = `
+    <div class="panel full"><h2>Ripple Dependency Explorer</h2><div class="small">inferred-ripple edges from public data; click nodes to filter route.</div><div id="cy"></div></div>
+  `;
+
+  document.getElementById('tab-Route & Weather Corridor Map').innerHTML = `
+    <div class="panel"><h2>Route & Weather Corridor Map</h2><canvas id="corridorChart"></canvas></div>
+    <div class="panel"><h2>NOAA / FAA Context</h2><div id="weatherContext"></div></div>
+  `;
+
+  document.getElementById('tab-Carrier & Route Reliability Ranking').innerHTML = `
+    <div class="panel full"><h2>Carrier & Route Reliability Ranking</h2><canvas id="rankingChart"></canvas><div class="small">carrier-delay-proxy ranking from public BTS data.</div></div>
+  `;
+
+  document.getElementById('tab-Data Quality Source Console').innerHTML = `
+    <div class="panel full"><h2>Data Quality Source Console</h2><div class="status-grid" id="sourceCards"></div></div>
+  `;
+}
+
+function updateAll() {
+  updateActiveTab();
+  updateHorizonButtons();
+  updateGlobalBadgeAndSummary();
+  drawOverview();
+  drawRiskMap();
+  drawHorizon();
+  drawTrajectoryInspector();
+  drawRiskMigration();
+  drawRipple();
+  drawCorridor();
+  drawRanking();
+  drawSourceConsole();
+}
+
+function updateHorizonButtons() {
+  [...document.querySelectorAll('#horizonButtons button')].forEach(b => b.classList.toggle('active', b.textContent === state.horizon));
+}
+
+function updateGlobalBadgeAndSummary() {
+  const mode = currentModeBadge();
+  const badge = document.getElementById('globalBadge');
+  badge.className = `badge ${mode.toLowerCase()}`;
+  badge.textContent = `MODE: ${mode}`;
+  const flights = filteredFlights();
+  const avgDelay = flights.length ? (flights.reduce((s, f) => s + f.delay, 0) / flights.length).toFixed(1) : '0.0';
+  const risk = Math.round(mock.probability.horizons[state.horizon] * 100);
+  document.getElementById('summaryText').textContent = `${flights.length} filtered flights | Avg delay ${avgDelay}m | ${state.horizon} risk ${risk}% | Cache NOAA ${mock.noaa.cacheAgeMin}m`;
+}
+
+function chart(id, type, data, options) {
+  if (!window.Chart) return;
+  if (charts[id]) charts[id].destroy();
+  const el = document.getElementById(id);
+  if (!el) return;
+  charts[id] = new Chart(el, { type, data, options });
+}
+
+function drawOverview() {
+  const flights = filteredFlights();
+  const avg = flights.length ? flights.reduce((s, f) => s + f.delay, 0) / flights.length : 0;
+  const severe = flights.filter(f => f.delay >= 45).length;
+  const topRoute = flights.sort((a, b) => b.delay - a.delay)[0]?.route || 'N/A';
+  const kpis = [
+    ['Filtered Flights', flights.length],
+    ['Avg Delay (min)', avg.toFixed(1)],
+    ['45m+ Risk Flights', severe],
+    ['Top Risk Route', topRoute]
+  ];
+  document.getElementById('overviewKpis').innerHTML = kpis.map(([k,v]) => `<div class="kpi"><div class="small">${k}</div><div class="v">${v}</div></div>`).join('');
+
+  const grouped = [...new Set(mock.btsFlights.map(f=>f.carrier))].map(c => {
+    const subset = flights.filter(f=>f.carrier===c);
+    return subset.length ? (subset.reduce((s,f)=>s+f.delay,0)/subset.length) : 0;
+  });
+  chart('carrierDelayChart', 'bar', {
+    labels: [...new Set(mock.btsFlights.map(f=>f.carrier))],
+    datasets: [{label:'Delay proxy (min)', data: grouped, backgroundColor:'#2dd4bf'}]
+  }, {plugins:{legend:{labels:{color:'#dbeafe'}}}, scales:{x:{ticks:{color:'#dbeafe'}},y:{ticks:{color:'#dbeafe'}}}, onClick:(e, els)=>{
+      if (!els.length) return;
+      const idx = els[0].index;
+      const carrier = charts['carrierDelayChart'].data.labels[idx];
+      document.getElementById('carrierFilter').value = carrier;
+      state.carrier = carrier;
+      updateAll();
+  }});
+
+  chart('horizonMiniChart', 'line', {
+    labels: Object.keys(mock.probability.horizons),
+    datasets:[{label:'Risk probability', data:Object.values(mock.probability.horizons), borderColor:'#28b6ff', backgroundColor:'rgba(40,182,255,.2)', fill:true}]
+  }, {plugins:{legend:{labels:{color:'#dbeafe'}}}, scales:{x:{ticks:{color:'#dbeafe'}},y:{ticks:{color:'#dbeafe'},min:0,max:1}}});
+}
+
+function riskColor(p) {
+  if (p < 0.4) return '#2dd4bf';
+  if (p < 0.55) return '#facc15';
+  if (p < 0.7) return '#fb923c';
+  return '#ef4444';
+}
+
+function drawRiskMap() {
+  const routes = [...new Set(mock.btsFlights.map(f => f.route))].slice(0, 9);
+  let svg = '<svg viewBox="0 0 360 360" role="img" aria-label="Risk contour map">';
+  routes.forEach((r, i) => {
+    const col = i % 3;
+    const row = Math.floor(i / 3);
+    const x = 20 + col * 115;
+    const y = 20 + row * 115;
+    const routeAvg = mock.btsFlights.filter(f=>f.route===r).reduce((s,f)=>s+f.delay,0) / mock.btsFlights.filter(f=>f.route===r).length;
+    const p = Math.min(0.95, 0.2 + routeAvg/90 + mock.probability.horizons[state.horizon]*0.4);
+    const stroke = state.route === r || state.selectedRoute === r ? '#f8fafc' : '#0b1220';
+    svg += `<g tabindex="0" data-route="${r}" class="risk-cell" style="cursor:pointer">
+      <rect x="${x}" y="${y}" rx="12" width="100" height="100" fill="${riskColor(p)}" fill-opacity="0.72" stroke="${stroke}" stroke-width="2"></rect>
+      <text x="${x+50}" y="${y+45}" text-anchor="middle" fill="#0b1220" font-size="10" font-weight="700">${r}</text>
+      <text x="${x+50}" y="${y+64}" text-anchor="middle" fill="#0b1220" font-size="11">${Math.round(p*100)}%</text>
+    </g>`;
+  });
+  svg += '</svg>';
+  document.getElementById('riskMap').innerHTML = svg;
+  document.getElementById('riskSelection').textContent = `Selected route: ${state.route !== 'ALL' ? state.route : (state.selectedRoute || 'None')}`;
+
+  document.querySelectorAll('.risk-cell').forEach(el => {
+    el.addEventListener('click', () => {
+      const route = el.getAttribute('data-route');
+      state.route = route;
+      state.selectedRoute = route;
+      document.getElementById('routeFilter').value = route;
+      updateAll();
+    });
+  });
+}
+
+function drawHorizon() {
+  const labels = Object.keys(mock.probability.horizons);
+  const vals = Object.values(mock.probability.horizons);
+  chart('horizonChart', 'line', {
+    labels,
+    datasets:[{label:'Delay > threshold probability', data:vals, borderColor:'#28b6ff', pointBackgroundColor:labels.map(l=>l===state.horizon?'#facc15':'#28b6ff'), pointRadius:labels.map(l=>l===state.horizon?6:4), tension:.35}]
+  }, {plugins:{legend:{labels:{color:'#dbeafe'}}}, scales:{x:{ticks:{color:'#dbeafe'}}, y:{ticks:{color:'#dbeafe'},min:0,max:1}}});
+
+  chart('overlayChart', 'line', {
+    labels: [...Array(13)].map((_,i)=>`Q${i+1}`),
+    datasets: labels.map((h, idx) => ({
+      label: h,
+      data: mock.probability.distributions[h],
+      borderColor: ['#2dd4bf','#28b6ff','#facc15','#fb923c','#ef4444'][idx],
+      tension: .4
+    }))
+  }, {plugins:{legend:{labels:{color:'#dbeafe'}}}, scales:{x:{ticks:{color:'#dbeafe'}}, y:{ticks:{color:'#dbeafe'}}}});
+
+  document.getElementById('horizonConfidence').innerHTML = labels.map(h => {
+    const p = mock.probability.horizons[h];
+    const cls = confidenceClass(p);
+    return `<div class="status"><div>${h}: ${Math.round(p*100)}%</div><div class="conf ${cls}">Confidence ${cls.toUpperCase()}</div></div>`;
+  }).join('');
+}
+
+function drawTrajectoryInspector() {
+  const d = mock.probability.distributions[state.horizon];
+  const buckets = [0,15,30,45,60,75,90,105];
+  const hist = buckets.slice(0,-1).map((b, i) => d.filter(v => v >= b && v < buckets[i+1]).length);
+  chart('histChart', 'bar', {
+    labels: buckets.slice(0,-1).map((b, i) => `${b}-${buckets[i+1]-1}`),
+    datasets:[{label:'Count', data:hist, backgroundColor:'#28b6ff'}]
+  }, {plugins:{legend:{labels:{color:'#dbeafe'}}}, scales:{x:{ticks:{color:'#dbeafe'}}, y:{ticks:{color:'#dbeafe'}}}});
+
+  const sorted = [...d].sort((a,b)=>a-b);
+  chart('ecdfChart', 'line', {
+    labels: sorted,
+    datasets:[{label:'ECDF', data: sorted.map((_,i)=>(i+1)/sorted.length), borderColor:'#2dd4bf', fill:false, pointRadius:2}]
+  }, {plugins:{legend:{labels:{color:'#dbeafe'}}}, scales:{x:{ticks:{color:'#dbeafe'}}, y:{ticks:{color:'#dbeafe'},min:0,max:1}}});
+
+  const min = Math.min(...d), max = Math.max(...d), median = sorted[Math.floor(sorted.length/2)];
+  const width = 560, height = 140;
+  const centerX = width/2;
+  const norm = v => 20 + ((v - min)/(max-min || 1))*100;
+  let ptsLeft = '', ptsRight = '';
+  sorted.forEach((v,i) => {
+    const y = norm(v);
+    const spread = 10 + (Math.sin((i/sorted.length)*Math.PI) * 50);
+    ptsLeft += `${centerX-spread},${y} `;
+    ptsRight = `${centerX+spread},${y} ` + ptsRight;
+  });
+  document.getElementById('violinPlot').innerHTML = `<svg viewBox="0 0 ${width} ${height}">
+    <polygon points="${ptsLeft + ptsRight}" fill="rgba(45,212,191,.35)" stroke="#2dd4bf" stroke-width="2"></polygon>
+    <line x1="${centerX}" y1="20" x2="${centerX}" y2="120" stroke="#93c5fd" stroke-dasharray="3 3"></line>
+    <text x="16" y="16" fill="#dbeafe" font-size="12">${state.horizon} distribution | min ${min} / median ${median} / max ${max}</text>
+  </svg>`;
+}
+
+function drawRiskMigration() {
+  const labels = Object.keys(mock.probability.horizons);
+  const vals = Object.values(mock.probability.horizons);
+  chart('migrationChart', 'line', {
+    labels,
+    datasets:[{label:'Risk migration', data:vals, borderColor:'#fb923c', backgroundColor:'rgba(251,146,60,.15)', fill:true, tension:.35}]
+  }, {plugins:{legend:{labels:{color:'#dbeafe'}}}, scales:{x:{ticks:{color:'#dbeafe'}}, y:{ticks:{color:'#dbeafe'},min:0,max:1}}});
+
+  document.getElementById('migrationRows').innerHTML = labels.map(h => {
+    const p = mock.probability.horizons[h];
+    const conf = confidenceClass(p);
+    return `<tr data-h="${h}"><td>${h}</td><td>${Math.round(p*100)}%</td><td class="conf ${conf}">${conf.toUpperCase()}</td></tr>`;
+  }).join('');
+
+  document.querySelectorAll('#migrationRows tr').forEach(row => row.addEventListener('click', () => {
+    state.horizon = row.getAttribute('data-h');
+    updateAll();
+  }));
+}
+
+function drawRipple() {
+  if (!window.cytoscape) {
+    document.getElementById('cy').textContent = 'Cytoscape CDN unavailable.';
+    return;
+  }
+  const nodes = [...new Set(mock.rippleEdges.flatMap(e=>[e.source,e.target]))].map(id => ({data:{id}}));
+  const edges = mock.rippleEdges.map(e => ({data:{id:`${e.source}-${e.target}`, source:e.source, target:e.target, weight:e.weight}}));
+  if (cy) cy.destroy();
+  cy = cytoscape({
+    container: document.getElementById('cy'),
+    elements: [...nodes, ...edges],
+    style: [
+      {selector:'node', style:{'background-color':'#28b6ff','label':'data(id)','color':'#dbeafe','font-size':9,'text-wrap':'wrap','text-max-width':'58px'}},
+      {selector:'edge', style:{'line-color':'#facc15','curve-style':'bezier','width':'mapData(weight, 0.5, 0.8, 2, 6)','target-arrow-color':'#facc15','target-arrow-shape':'triangle'}}
+    ],
+    layout: {name:'cose', animate:false}
+  });
+  cy.on('tap', 'node', (evt) => {
+    const route = evt.target.id();
+    state.route = route;
+    state.selectedRoute = route;
+    document.getElementById('routeFilter').value = route;
+    updateAll();
+  });
+}
+
+function drawCorridor() {
+  const flights = filteredFlights();
+  chart('corridorChart', 'scatter', {
+    datasets: [{
+      label: 'Route public-trajectory corridor',
+      data: flights.map((f, i) => ({x: i+1, y: f.delay + mock.noaa.convectiveRisk*10})),
+      pointBackgroundColor: flights.map(f => riskColor(Math.min(0.95, f.delay/90))),
+      pointRadius: 6
+    }]
+  }, {plugins:{legend:{labels:{color:'#dbeafe'}}}, scales:{x:{ticks:{color:'#dbeafe'},title:{display:true,text:'Route Index',color:'#dbeafe'}}, y:{ticks:{color:'#dbeafe'},title:{display:true,text:'Weather-adjusted delay',color:'#dbeafe'}}}});
+
+  const conf = confidenceClass((1-mock.noaa.convectiveRisk) * 0.8);
+  document.getElementById('weatherContext').innerHTML = `
+    <div class="kpi"><div class="small">METAR</div><div>${mock.noaa.metar}</div></div>
+    <div class="kpi"><div class="small">TAF</div><div>${mock.noaa.taf}</div></div>
+    <div class="kpi"><div class="small">FAA ASPM</div><div>${mock.faa.aspmFlowProgram}, ARR ${mock.faa.arrivalRatePerHour}/h DEP ${mock.faa.departureRatePerHour}/h</div></div>
+    <div class="kpi"><div class="small">Cache age</div><div>NOAA ${mock.noaa.cacheAgeMin}m | FAA ${mock.faa.cacheAgeMin}m</div></div>
+    <div class="conf ${conf}">Confidence ${conf.toUpperCase()}</div>
+  `;
+}
+
+function drawRanking() {
+  const carriers = [...new Set(mock.btsFlights.map(f=>f.carrier))];
+  const reliability = carriers.map(c => {
+    const s = filteredFlights().filter(f=>f.carrier===c);
+    const avgDelay = s.length ? s.reduce((a,b)=>a+b.delay,0)/s.length : 0;
+    return +(100 - Math.min(95, avgDelay*1.2)).toFixed(1);
+  });
+  chart('rankingChart', 'bar', {
+    labels: carriers,
+    datasets:[{label:'Reliability score (higher better)', data:reliability, backgroundColor:reliability.map(v=>v>70?'#2dd4bf':v>55?'#facc15':v>40?'#fb923c':'#ef4444')}]
+  }, {indexAxis:'y', plugins:{legend:{labels:{color:'#dbeafe'}}}, scales:{x:{ticks:{color:'#dbeafe'},min:0,max:100}, y:{ticks:{color:'#dbeafe'}}}, onClick:(e, els)=>{
+      if (!els.length) return;
+      const carrier = charts['rankingChart'].data.labels[els[0].index];
+      state.carrier = carrier;
+      document.getElementById('carrierFilter').value = carrier;
+      updateAll();
+  }});
+}
+
+function drawSourceConsole() {
+  const mode = currentModeBadge();
+  document.getElementById('sourceCards').innerHTML = mock.sourceStatus.map(s => `
+    <div class="status" data-state="${mode==='DEGRADED' && s.metric.includes('Trajectory') ? 'UNAVAILABLE' : s.state}">
+      <div><strong>${s.metric}</strong></div>
+      <div class="small">Status: ${mode==='DEGRADED' && s.metric.includes('Trajectory') ? 'UNAVAILABLE' : s.state}</div>
+      <div class="small">Cache age: ${s.cacheAge}</div>
+      <div class="conf ${s.confidence}">Confidence ${s.confidence.toUpperCase()}</div>
+    </div>
+  `).join('');
+}
+
+init();
+</script>
+</body>
+</html>
