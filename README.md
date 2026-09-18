@@ -42,3 +42,16 @@ python scripts/load_bts_cache.py /absolute/path/to/public_bts_export.csv
 ## Deployment
 - Docker Compose config is included (`docker-compose.yml`).
 - Frontend/Backend Dockerfiles are included for public hosting platforms.
+
+## Standalone HTML Prototype (No Backend / No Build)
+- File: `prototype.html`
+- Live URL (GitHub Pages): `https://petestreet83.github.io/dfw-probabilistic-ops-explorer/prototype.html`
+
+### Share Options
+1. **Direct file sharing**
+   - Download `prototype.html` from this repository.
+   - Send the single file to any user/device.
+   - Open it directly in a modern browser (Chrome, Edge, Safari, Firefox).
+2. **GitHub Pages link sharing**
+   - Share `https://petestreet83.github.io/dfw-probabilistic-ops-explorer/prototype.html`
+   - No installation, backend, or build step is required.
