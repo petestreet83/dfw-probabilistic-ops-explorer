@@ -26,6 +26,45 @@ npm run dev
 
 Open the local Vite app shown in the terminal.
 
+## Step-by-step deployment (Cloudflare Pages)
+
+1. Push your latest code to GitHub.
+2. In Cloudflare, go to **Workers & Pages** → **Create** → **Pages** → **Connect to Git**.
+3. Select this repository: `petestreet83/dfw-probabilistic-ops-explorer`.
+4. Use the repository root as the project root.
+5. Configure build settings:
+   - **Build command:** `npm run build`
+   - **Build output directory:** `dist`
+   - **Node version:** `20` or later
+6. Save and trigger the first deployment.
+7. Wait for the deploy to finish, then open the generated Pages URL.
+8. For ongoing delivery, merge to `main` for production and use feature branches/PRs for preview deployments.
+
+## Step-by-step UI/UX browser testing
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Start the app locally:
+   ```bash
+   npm run dev
+   ```
+3. Open the local URL printed in the terminal (usually `http://localhost:5173`).
+4. Validate key UX flows:
+   - Graph rendering and pan/zoom interactions
+   - Cluster/community filters
+   - Agent activity and metrics panels
+   - Search and node detail exploration
+5. Verify transparency and limitation labels are visible in the UI.
+6. Run a production-like local check:
+   ```bash
+   npm run build
+   npm run preview
+   ```
+7. Open the preview URL printed in the terminal and repeat the same UX checks.
+8. Repeat a final smoke test on the Cloudflare Pages preview/production URL after deployment.
+
 ## Validation
 
 ```bash
