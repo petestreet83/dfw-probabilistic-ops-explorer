@@ -5,3 +5,6 @@ backend/data/*.db
 backend/data/*.db-*
 __pycache__
 .pytest_cache
+node_modules
+dist
+tmp/
