@@ -1,24 +1,14 @@
-# Frontend: DFW Probabilistic Operations Explorer
+# Context Graph Command Center frontend
 
-Next.js dashboard for the Phase 1 public-data-only release.
+Static React + Vite application for the interactive knowledge-graph demo.
 
-## Prerequisites
-- Node.js 22+
-- Backend API running at `http://localhost:8000` (or set `NEXT_PUBLIC_API_BASE_URL`)
+## Scripts
 
-## Run locally
 ```bash
-npm install
-NEXT_PUBLIC_API_BASE_URL=http://localhost:8000 npm run dev
-```
-
-## Validate
-```bash
+npm run dev
 npm run lint
 npm run build
+npm run preview
 ```
 
-## Notes
-- UI includes data-mode badge (`LIVE PUBLIC DATA`, `CACHED PUBLIC DATA`, `MIXED`, `DEGRADED`).
-- Source status cards show explicit `UNAVAILABLE/STALE/CACHED-ONLY` states when degraded.
-- Footer shows mandatory public-data limitation notices.
+The Vite build emits the production site to the repository-level `dist/` directory for Cloudflare Pages.

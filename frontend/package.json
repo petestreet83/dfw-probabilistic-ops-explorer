@@ -1,32 +1,41 @@
 {
-  "name": "frontend",
-  "version": "0.1.0",
+  "name": "context-graph-command-center",
   "private": true,
+  "version": "0.1.0",
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "dev": "vite",
+    "build": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json && vite build",
+    "lint": "eslint .",
+    "format": "prettier --check .",
+    "preview": "vite preview",
+    "start": "vite preview --host 0.0.0.0 --port 3000"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.103.1",
-    "@visx/visx": "^4.0.0",
-    "d3": "^7.9.0",
-    "maplibre-gl": "^6.10.0",
-    "next": "16.3.5",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
+    "@react-sigma/core": "^5.0.6",
+    "graphology": "^0.26.0",
+    "lucide-react": "^1.47.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "recharts": "^3.10.1",
+    "sigma": "^3.0.3",
     "zustand": "^5.0.15"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.3.5",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "@eslint/js": "^10.0.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^20.19.17",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^6.1.1",
+    "eslint": "^9.37.0",
+    "eslint-plugin-react-hooks": "^7.1.0",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^17.12.0",
+    "prettier": "^3.9.8",
+    "tailwindcss": "^4.1.16",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.70.0",
+    "vite": "^8.3.0"
   }
 }
