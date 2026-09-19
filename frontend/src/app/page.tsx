@@ -4,8 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 
 import { DataModeBadge } from "@/components/data-mode-badge";
 import { HighRiskTable } from "@/components/high-risk-table";
+import { ProcessOverviewCockpit } from "@/components/process-overview-cockpit";
 import { ProbabilityHorizon } from "@/components/probability-horizon";
-import { RiskMapStub } from "@/components/risk-map-stub";
 import { SourceStatusConsole } from "@/components/source-status-console";
 import { TransparencyFooter } from "@/components/transparency-footer";
 import { fetchDashboard } from "@/lib/api";
@@ -67,14 +67,23 @@ export default function Home() {
         </section>
       ) : null}
 
+      <ProcessOverviewCockpit
+        airport={dashboard.data?.airport ?? "KDFW"}
+        generatedAt={dashboard.data?.generated_at ?? new Date().toISOString()}
+        points={dashboard.data?.risk_map_points ?? []}
+        edges={dashboard.data?.ripple_edges ?? []}
+        flights={dashboard.data?.high_risk_flights ?? []}
+        sourceStatus={dashboard.data?.source_status ?? []}
+        overviewMetrics={dashboard.data?.overview_metrics ?? []}
+        probabilityHorizon={dashboard.data?.probability_horizon ?? []}
+      />
+
       <ProbabilityHorizon values={dashboard.data?.probability_horizon ?? []} />
 
       <section className="grid gap-4 lg:grid-cols-2">
-        <RiskMapStub points={dashboard.data?.risk_map_points ?? []} />
         <SourceStatusConsole sources={dashboard.data?.source_status ?? []} />
+        <HighRiskTable flights={dashboard.data?.high_risk_flights ?? []} />
       </section>
-
-      <HighRiskTable flights={dashboard.data?.high_risk_flights ?? []} />
       <TransparencyFooter limitations={dashboard.data?.limitations ?? []} />
     </main>
   );
