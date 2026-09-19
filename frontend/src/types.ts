@@ -1,4 +1,5 @@
-export type DataMode = "LIVE PUBLIC DATA" | "CACHED PUBLIC DATA" | "MIXED" | "DEGRADED";
+export type DataMode =
+  "LIVE PUBLIC DATA" | "CACHED PUBLIC DATA" | "MIXED" | "DEGRADED";
 
 export type SourceKind =
   | "Live public weather observation"

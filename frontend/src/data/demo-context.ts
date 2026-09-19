@@ -32,7 +32,8 @@ const inferredProvenance: Provenance = {
 
 const syntheticProvenance: Provenance = {
   sourceSystem: "Synthetic inbound scenario pack",
-  sourceUrl: "https://github.com/petestreet83/dfw-probabilistic-ops-explorer/tree/main/frontend/src/data",
+  sourceUrl:
+    "https://github.com/petestreet83/dfw-probabilistic-ops-explorer/tree/main/frontend/src/data",
   sourceTimestamp: "2026-09-19T01:20:00Z",
   cacheAgeMinutes: 0,
   dataMode: "MIXED",
@@ -52,7 +53,8 @@ export const demoDataset: DemoDataset = {
       value: "12",
       delta: "+3 in 15m",
       tone: "cyan",
-      detail: "Supervisors, enrichers, and query planners operating on public-data-derived graph state.",
+      detail:
+        "Supervisors, enrichers, and query planners operating on public-data-derived graph state.",
       provenance: syntheticProvenance,
     },
     {
@@ -61,7 +63,8 @@ export const demoDataset: DemoDataset = {
       value: "184 ms",
       delta: "-21 ms",
       tone: "violet",
-      detail: "Measured against static demo queries over Sigma + Graphology scene state.",
+      detail:
+        "Measured against static demo queries over Sigma + Graphology scene state.",
       provenance: syntheticProvenance,
     },
     {
@@ -70,7 +73,8 @@ export const demoDataset: DemoDataset = {
       value: "87%",
       delta: "+5 pts",
       tone: "amber",
-      detail: "Paths linked to source freshness, inferred dependency scores, and benchmark context.",
+      detail:
+        "Paths linked to source freshness, inferred dependency scores, and benchmark context.",
       provenance: inferredProvenance,
     },
     {
@@ -79,18 +83,61 @@ export const demoDataset: DemoDataset = {
       value: "0.68",
       delta: "watch",
       tone: "rose",
-      detail: "Composite synthetic score imputed from public inbound weather, benchmark delay, and connection risk fields.",
+      detail:
+        "Composite synthetic score imputed from public inbound weather, benchmark delay, and connection risk fields.",
       provenance: weatherProvenance,
     },
   ],
   trends: [
-    { minute: "00:20", activeAgents: 6, graphDensity: 0.36, queryLatency: 248, evidenceCoverage: 72 },
-    { minute: "00:30", activeAgents: 7, graphDensity: 0.39, queryLatency: 226, evidenceCoverage: 75 },
-    { minute: "00:40", activeAgents: 8, graphDensity: 0.43, queryLatency: 212, evidenceCoverage: 79 },
-    { minute: "00:50", activeAgents: 10, graphDensity: 0.49, queryLatency: 205, evidenceCoverage: 81 },
-    { minute: "01:00", activeAgents: 9, graphDensity: 0.52, queryLatency: 197, evidenceCoverage: 83 },
-    { minute: "01:10", activeAgents: 11, graphDensity: 0.55, queryLatency: 191, evidenceCoverage: 85 },
-    { minute: "01:20", activeAgents: 12, graphDensity: 0.58, queryLatency: 184, evidenceCoverage: 87 },
+    {
+      minute: "00:20",
+      activeAgents: 6,
+      graphDensity: 0.36,
+      queryLatency: 248,
+      evidenceCoverage: 72,
+    },
+    {
+      minute: "00:30",
+      activeAgents: 7,
+      graphDensity: 0.39,
+      queryLatency: 226,
+      evidenceCoverage: 75,
+    },
+    {
+      minute: "00:40",
+      activeAgents: 8,
+      graphDensity: 0.43,
+      queryLatency: 212,
+      evidenceCoverage: 79,
+    },
+    {
+      minute: "00:50",
+      activeAgents: 10,
+      graphDensity: 0.49,
+      queryLatency: 205,
+      evidenceCoverage: 81,
+    },
+    {
+      minute: "01:00",
+      activeAgents: 9,
+      graphDensity: 0.52,
+      queryLatency: 197,
+      evidenceCoverage: 83,
+    },
+    {
+      minute: "01:10",
+      activeAgents: 11,
+      graphDensity: 0.55,
+      queryLatency: 191,
+      evidenceCoverage: 85,
+    },
+    {
+      minute: "01:20",
+      activeAgents: 12,
+      graphDensity: 0.58,
+      queryLatency: 184,
+      evidenceCoverage: 87,
+    },
   ],
   nodes: [
     {
@@ -99,7 +146,8 @@ export const demoDataset: DemoDataset = {
       kind: "query",
       clusterId: "operator-loop",
       status: "listening",
-      summary: "Accepts analyst prompts and maps them to evidence-bearing graph paths.",
+      summary:
+        "Accepts analyst prompts and maps them to evidence-bearing graph paths.",
       size: 18,
       color: "#22d3ee",
       score: 0.89,
@@ -127,7 +175,8 @@ export const demoDataset: DemoDataset = {
       kind: "agent",
       clusterId: "operator-loop",
       status: "running",
-      summary: "Merges public weather, BTS benchmark, and synthetic fill values into a single context frame.",
+      summary:
+        "Merges public weather, BTS benchmark, and synthetic fill values into a single context frame.",
       size: 16,
       color: "#0ea5e9",
       score: 0.8,
@@ -141,7 +190,8 @@ export const demoDataset: DemoDataset = {
       kind: "source",
       clusterId: "source-layer",
       status: "fresh",
-      summary: "Live public weather observation driving thunderstorm and visibility stress scoring.",
+      summary:
+        "Live public weather observation driving thunderstorm and visibility stress scoring.",
       size: 15,
       color: "#8b5cf6",
       score: 0.93,
@@ -155,7 +205,8 @@ export const demoDataset: DemoDataset = {
       kind: "source",
       clusterId: "source-layer",
       status: "warm",
-      summary: "Historical on-time performance baseline used for imputed carrier-delay priors.",
+      summary:
+        "Historical on-time performance baseline used for imputed carrier-delay priors.",
       size: 15,
       color: "#7c3aed",
       score: 0.81,
@@ -169,7 +220,8 @@ export const demoDataset: DemoDataset = {
       kind: "signal",
       clusterId: "source-layer",
       status: "watch",
-      summary: "Derived weather cell severity indicator surrounding inbound fixes.",
+      summary:
+        "Derived weather cell severity indicator surrounding inbound fixes.",
       size: 13,
       color: "#a78bfa",
       score: 0.78,
@@ -183,7 +235,8 @@ export const demoDataset: DemoDataset = {
       kind: "community",
       clusterId: "constraint-cluster",
       status: "elevated",
-      summary: "Synthetic community representing the next inbound arrival wave and shared risk surface.",
+      summary:
+        "Synthetic community representing the next inbound arrival wave and shared risk surface.",
       size: 22,
       color: "#f59e0b",
       score: 0.86,
@@ -197,7 +250,8 @@ export const demoDataset: DemoDataset = {
       kind: "signal",
       clusterId: "constraint-cluster",
       status: "imputed",
-      summary: "Proxy field imputed from public arrival delays and carrier-delay benchmarks; not direct gate telemetry.",
+      summary:
+        "Proxy field imputed from public arrival delays and carrier-delay benchmarks; not direct gate telemetry.",
       size: 14,
       color: "#fbbf24",
       score: 0.74,
@@ -211,7 +265,8 @@ export const demoDataset: DemoDataset = {
       kind: "signal",
       clusterId: "constraint-cluster",
       status: "imputed",
-      summary: "Evidence path built from public schedule adjacency, not from crew systems.",
+      summary:
+        "Evidence path built from public schedule adjacency, not from crew systems.",
       size: 14,
       color: "#f59e0b",
       score: 0.69,
@@ -225,7 +280,8 @@ export const demoDataset: DemoDataset = {
       kind: "evidence",
       clusterId: "evidence-fabric",
       status: "indexed",
-      summary: "Holds explainable paths, freshness markers, and graph build events for every surfaced answer.",
+      summary:
+        "Holds explainable paths, freshness markers, and graph build events for every surfaced answer.",
       size: 17,
       color: "#10b981",
       score: 0.91,
@@ -239,7 +295,8 @@ export const demoDataset: DemoDataset = {
       kind: "community",
       clusterId: "impact-cluster",
       status: "watch",
-      summary: "Projected outbound effects and missed-connect risk from the current inbound wave.",
+      summary:
+        "Projected outbound effects and missed-connect risk from the current inbound wave.",
       size: 21,
       color: "#fb7185",
       score: 0.82,
@@ -253,7 +310,8 @@ export const demoDataset: DemoDataset = {
       kind: "signal",
       clusterId: "impact-cluster",
       status: "elevated",
-      summary: "Probability of outbound disruption based on inbound compression and synthetic connection time buffers.",
+      summary:
+        "Probability of outbound disruption based on inbound compression and synthetic connection time buffers.",
       size: 16,
       color: "#f43f5e",
       score: 0.77,
@@ -267,180 +325,450 @@ export const demoDataset: DemoDataset = {
       kind: "evidence",
       clusterId: "evidence-fabric",
       status: "ready",
-      summary: "Generated response card combining agent activity, evidence steps, and mitigation candidates.",
+      summary:
+        "Generated response card combining agent activity, evidence steps, and mitigation candidates.",
       size: 16,
       color: "#34d399",
       score: 0.83,
       x: 0.28,
       y: 0.95,
       provenance: syntheticProvenance,
-    }
+    },
   ],
   edges: [
-    { id: "e1", source: "query-console", target: "planner-agent", weight: 5, confidence: 0.91, kind: "query", summary: "Analyst question routed to planning agent." },
-    { id: "e2", source: "planner-agent", target: "fusion-agent", weight: 4, confidence: 0.87, kind: "handoff", summary: "Plan requests fused weather + benchmark context." },
-    { id: "e3", source: "metar-feed", target: "fusion-agent", weight: 4, confidence: 0.93, kind: "construction", summary: "Fresh METAR payload added to graph build." },
-    { id: "e4", source: "bts-cache", target: "fusion-agent", weight: 3, confidence: 0.81, kind: "construction", summary: "Historical benchmark cache supplies carrier-delay prior." },
-    { id: "e5", source: "fusion-agent", target: "convective-signal", weight: 2, confidence: 0.82, kind: "construction", summary: "Weather severity score generated." },
-    { id: "e6", source: "fusion-agent", target: "inbound-bank", weight: 5, confidence: 0.86, kind: "construction", summary: "Inbound bank community composed from scheduled arrival wave." },
-    { id: "e7", source: "convective-signal", target: "inbound-bank", weight: 3, confidence: 0.79, kind: "evidence", summary: "Storm impact increases inbound cluster pressure." },
-    { id: "e8", source: "bts-cache", target: "gate-turns", weight: 2, confidence: 0.74, kind: "evidence", summary: "Imputed turnaround proxy derived from historical benchmark." },
-    { id: "e9", source: "inbound-bank", target: "gate-turns", weight: 3, confidence: 0.77, kind: "evidence", summary: "Inbound compression raises turnaround proxy risk." },
-    { id: "e10", source: "inbound-bank", target: "crew-chain", weight: 4, confidence: 0.72, kind: "evidence", summary: "Community pressure propagates to crew continuity proxy." },
-    { id: "e11", source: "gate-turns", target: "impact-cluster", weight: 3, confidence: 0.76, kind: "handoff", summary: "Turnaround risk propagates into outbound impact cluster." },
-    { id: "e12", source: "crew-chain", target: "impact-cluster", weight: 4, confidence: 0.73, kind: "handoff", summary: "Crew continuity proxy drives downstream exposure." },
-    { id: "e13", source: "impact-cluster", target: "missed-connect", weight: 5, confidence: 0.8, kind: "evidence", summary: "Outbound community pressure raises missed-connect signal." },
-    { id: "e14", source: "impact-cluster", target: "evidence-trace", weight: 2, confidence: 0.88, kind: "construction", summary: "Impact assessments persisted into evidence fabric." },
-    { id: "e15", source: "query-console", target: "evidence-trace", weight: 2, confidence: 0.9, kind: "query", summary: "Graph query results linked to evidence trace store." },
-    { id: "e16", source: "evidence-trace", target: "analyst-brief", weight: 4, confidence: 0.92, kind: "handoff", summary: "Evidence package assembled into analyst brief." },
-    { id: "e17", source: "missed-connect", target: "analyst-brief", weight: 3, confidence: 0.78, kind: "evidence", summary: "Downstream missed-connect risk is included in the brief." },
-    { id: "e18", source: "planner-agent", target: "evidence-trace", weight: 2, confidence: 0.84, kind: "construction", summary: "Planner snapshots its chosen graph path." }
+    {
+      id: "e1",
+      source: "query-console",
+      target: "planner-agent",
+      weight: 5,
+      confidence: 0.91,
+      kind: "query",
+      summary: "Analyst question routed to planning agent.",
+    },
+    {
+      id: "e2",
+      source: "planner-agent",
+      target: "fusion-agent",
+      weight: 4,
+      confidence: 0.87,
+      kind: "handoff",
+      summary: "Plan requests fused weather + benchmark context.",
+    },
+    {
+      id: "e3",
+      source: "metar-feed",
+      target: "fusion-agent",
+      weight: 4,
+      confidence: 0.93,
+      kind: "construction",
+      summary: "Fresh METAR payload added to graph build.",
+    },
+    {
+      id: "e4",
+      source: "bts-cache",
+      target: "fusion-agent",
+      weight: 3,
+      confidence: 0.81,
+      kind: "construction",
+      summary: "Historical benchmark cache supplies carrier-delay prior.",
+    },
+    {
+      id: "e5",
+      source: "fusion-agent",
+      target: "convective-signal",
+      weight: 2,
+      confidence: 0.82,
+      kind: "construction",
+      summary: "Weather severity score generated.",
+    },
+    {
+      id: "e6",
+      source: "fusion-agent",
+      target: "inbound-bank",
+      weight: 5,
+      confidence: 0.86,
+      kind: "construction",
+      summary: "Inbound bank community composed from scheduled arrival wave.",
+    },
+    {
+      id: "e7",
+      source: "convective-signal",
+      target: "inbound-bank",
+      weight: 3,
+      confidence: 0.79,
+      kind: "evidence",
+      summary: "Storm impact increases inbound cluster pressure.",
+    },
+    {
+      id: "e8",
+      source: "bts-cache",
+      target: "gate-turns",
+      weight: 2,
+      confidence: 0.74,
+      kind: "evidence",
+      summary: "Imputed turnaround proxy derived from historical benchmark.",
+    },
+    {
+      id: "e9",
+      source: "inbound-bank",
+      target: "gate-turns",
+      weight: 3,
+      confidence: 0.77,
+      kind: "evidence",
+      summary: "Inbound compression raises turnaround proxy risk.",
+    },
+    {
+      id: "e10",
+      source: "inbound-bank",
+      target: "crew-chain",
+      weight: 4,
+      confidence: 0.72,
+      kind: "evidence",
+      summary: "Community pressure propagates to crew continuity proxy.",
+    },
+    {
+      id: "e11",
+      source: "gate-turns",
+      target: "impact-cluster",
+      weight: 3,
+      confidence: 0.76,
+      kind: "handoff",
+      summary: "Turnaround risk propagates into outbound impact cluster.",
+    },
+    {
+      id: "e12",
+      source: "crew-chain",
+      target: "impact-cluster",
+      weight: 4,
+      confidence: 0.73,
+      kind: "handoff",
+      summary: "Crew continuity proxy drives downstream exposure.",
+    },
+    {
+      id: "e13",
+      source: "impact-cluster",
+      target: "missed-connect",
+      weight: 5,
+      confidence: 0.8,
+      kind: "evidence",
+      summary: "Outbound community pressure raises missed-connect signal.",
+    },
+    {
+      id: "e14",
+      source: "impact-cluster",
+      target: "evidence-trace",
+      weight: 2,
+      confidence: 0.88,
+      kind: "construction",
+      summary: "Impact assessments persisted into evidence fabric.",
+    },
+    {
+      id: "e15",
+      source: "query-console",
+      target: "evidence-trace",
+      weight: 2,
+      confidence: 0.9,
+      kind: "query",
+      summary: "Graph query results linked to evidence trace store.",
+    },
+    {
+      id: "e16",
+      source: "evidence-trace",
+      target: "analyst-brief",
+      weight: 4,
+      confidence: 0.92,
+      kind: "handoff",
+      summary: "Evidence package assembled into analyst brief.",
+    },
+    {
+      id: "e17",
+      source: "missed-connect",
+      target: "analyst-brief",
+      weight: 3,
+      confidence: 0.78,
+      kind: "evidence",
+      summary: "Downstream missed-connect risk is included in the brief.",
+    },
+    {
+      id: "e18",
+      source: "planner-agent",
+      target: "evidence-trace",
+      weight: 2,
+      confidence: 0.84,
+      kind: "construction",
+      summary: "Planner snapshots its chosen graph path.",
+    },
   ],
   communities: [
     {
       id: "operator-loop",
       title: "Operator loop",
-      summary: "Human and agent coordination layer that transforms analyst prompts into graph traversal plans.",
+      summary:
+        "Human and agent coordination layer that transforms analyst prompts into graph traversal plans.",
       nodeIds: ["query-console", "planner-agent", "fusion-agent"],
       edgeIds: ["e1", "e2", "e15", "e18"],
       metrics: [
         { label: "Queued prompts", value: "4" },
         { label: "Median planning depth", value: "3 hops" },
-        { label: "Acceptance rate", value: "96%" }
-      ]
+        { label: "Acceptance rate", value: "96%" },
+      ],
     },
     {
       id: "constraint-cluster",
       title: "Inbound constraint cluster",
-      summary: "Synthetic inbound wave with public-source pressure, turnaround proxy risk, and crew continuity inference.",
+      summary:
+        "Synthetic inbound wave with public-source pressure, turnaround proxy risk, and crew continuity inference.",
       nodeIds: ["inbound-bank", "gate-turns", "crew-chain"],
       edgeIds: ["e6", "e7", "e8", "e9", "e10"],
       metrics: [
         { label: "Pressure score", value: "0.68" },
         { label: "Nodes above 0.75", value: "2" },
-        { label: "Imputed fields", value: "2" }
-      ]
+        { label: "Imputed fields", value: "2" },
+      ],
     },
     {
       id: "impact-cluster",
       title: "Downstream impact cluster",
-      summary: "Projected outbound disruption surface and missed-connect exposure from the current arrival bank.",
-      nodeIds: ["impact-cluster", "missed-connect", "analyst-brief", "evidence-trace"],
+      summary:
+        "Projected outbound disruption surface and missed-connect exposure from the current arrival bank.",
+      nodeIds: [
+        "impact-cluster",
+        "missed-connect",
+        "analyst-brief",
+        "evidence-trace",
+      ],
       edgeIds: ["e11", "e12", "e13", "e14", "e16", "e17"],
       metrics: [
         { label: "Projected exposure", value: "18 departures" },
         { label: "P95 spillover", value: "+27 min" },
-        { label: "Explainable paths", value: "6" }
-      ]
-    }
+        { label: "Explainable paths", value: "6" },
+      ],
+    },
   ],
   queries: [
     {
       id: "q1",
       title: "Explain the next inbound choke point",
-      prompt: "Which synthetic inbound signals most credibly explain the next DFW arrival-bank choke point?",
-      summary: "The inbound bank cluster is the earliest constraint. Fresh METAR risk and historical delay priors converge on turnaround proxy and crew continuity pressure.",
-      nodeIds: ["query-console", "planner-agent", "fusion-agent", "metar-feed", "bts-cache", "inbound-bank", "gate-turns", "crew-chain"],
+      prompt:
+        "Which synthetic inbound signals most credibly explain the next DFW arrival-bank choke point?",
+      summary:
+        "The inbound bank cluster is the earliest constraint. Fresh METAR risk and historical delay priors converge on turnaround proxy and crew continuity pressure.",
+      nodeIds: [
+        "query-console",
+        "planner-agent",
+        "fusion-agent",
+        "metar-feed",
+        "bts-cache",
+        "inbound-bank",
+        "gate-turns",
+        "crew-chain",
+      ],
       edgeIds: ["e1", "e2", "e3", "e4", "e6", "e8", "e9", "e10"],
-      evidencePathIds: ["p1", "p2"]
+      evidencePathIds: ["p1", "p2"],
     },
     {
       id: "q2",
       title: "Trace the strongest downstream impact",
-      prompt: "Show the highest-confidence evidence path from inbound compression to downstream customer impact.",
-      summary: "The strongest path runs inbound bank → crew continuity proxy → downstream impact cluster → missed-connect signal, with 0.73-0.80 confidence across hops.",
-      nodeIds: ["inbound-bank", "crew-chain", "impact-cluster", "missed-connect", "evidence-trace", "analyst-brief"],
+      prompt:
+        "Show the highest-confidence evidence path from inbound compression to downstream customer impact.",
+      summary:
+        "The strongest path runs inbound bank → crew continuity proxy → downstream impact cluster → missed-connect signal, with 0.73-0.80 confidence across hops.",
+      nodeIds: [
+        "inbound-bank",
+        "crew-chain",
+        "impact-cluster",
+        "missed-connect",
+        "evidence-trace",
+        "analyst-brief",
+      ],
       edgeIds: ["e10", "e12", "e13", "e14", "e16", "e17"],
-      evidencePathIds: ["p2", "p3"]
+      evidencePathIds: ["p2", "p3"],
     },
     {
       id: "q3",
       title: "What did the agents build in the last 20 minutes?",
-      prompt: "Summarize graph construction events, evidence indexing, and agent handoffs in the last synthetic refresh window.",
-      summary: "Agents fused weather and benchmark layers, created the inbound bank community, indexed six explainable paths, and generated a review-ready analyst brief.",
-      nodeIds: ["planner-agent", "fusion-agent", "metar-feed", "bts-cache", "evidence-trace", "analyst-brief"],
+      prompt:
+        "Summarize graph construction events, evidence indexing, and agent handoffs in the last synthetic refresh window.",
+      summary:
+        "Agents fused weather and benchmark layers, created the inbound bank community, indexed six explainable paths, and generated a review-ready analyst brief.",
+      nodeIds: [
+        "planner-agent",
+        "fusion-agent",
+        "metar-feed",
+        "bts-cache",
+        "evidence-trace",
+        "analyst-brief",
+      ],
       edgeIds: ["e2", "e3", "e4", "e14", "e16", "e18"],
-      evidencePathIds: ["p1", "p3"]
-    }
+      evidencePathIds: ["p1", "p3"],
+    },
   ],
   evidencePaths: [
     {
       id: "p1",
       title: "Weather to inbound bank assembly",
       confidence: 0.86,
-      summary: "Fresh METAR conditions and cached benchmark priors were fused into the inbound community surface.",
+      summary:
+        "Fresh METAR conditions and cached benchmark priors were fused into the inbound community surface.",
       nodeIds: ["metar-feed", "fusion-agent", "inbound-bank"],
       steps: [
-        { label: "METAR stream", explanation: "Convective weather and visibility degradation raised the live weather risk baseline." },
-        { label: "Fusion Agent", explanation: "The agent blended live weather with historical delay priors to fill missing inbound context fields." },
-        { label: "Inbound bank cluster", explanation: "The arrival wave community was rebuilt with updated synthetic pressure scores." }
-      ]
+        {
+          label: "METAR stream",
+          explanation:
+            "Convective weather and visibility degradation raised the live weather risk baseline.",
+        },
+        {
+          label: "Fusion Agent",
+          explanation:
+            "The agent blended live weather with historical delay priors to fill missing inbound context fields.",
+        },
+        {
+          label: "Inbound bank cluster",
+          explanation:
+            "The arrival wave community was rebuilt with updated synthetic pressure scores.",
+        },
+      ],
     },
     {
       id: "p2",
       title: "Inbound pressure to downstream exposure",
       confidence: 0.78,
-      summary: "Inbound compression propagates through imputed turnaround and crew continuity proxies into outbound exposure.",
-      nodeIds: ["inbound-bank", "crew-chain", "impact-cluster", "missed-connect"],
+      summary:
+        "Inbound compression propagates through imputed turnaround and crew continuity proxies into outbound exposure.",
+      nodeIds: [
+        "inbound-bank",
+        "crew-chain",
+        "impact-cluster",
+        "missed-connect",
+      ],
       steps: [
-        { label: "Inbound bank cluster", explanation: "The next arrival wave shows the highest combined pressure score in the graph." },
-        { label: "Crew continuity proxy", explanation: "Public schedule adjacency suggests fragile recovery options without claiming access to crew systems." },
-        { label: "Downstream impact cluster", explanation: "Projected outbound spillover exceeds the normal benchmark by 27 minutes at P95." },
-        { label: "Missed-connect signal", explanation: "The strongest downstream customer-facing signal is missed-connect risk." }
-      ]
+        {
+          label: "Inbound bank cluster",
+          explanation:
+            "The next arrival wave shows the highest combined pressure score in the graph.",
+        },
+        {
+          label: "Crew continuity proxy",
+          explanation:
+            "Public schedule adjacency suggests fragile recovery options without claiming access to crew systems.",
+        },
+        {
+          label: "Downstream impact cluster",
+          explanation:
+            "Projected outbound spillover exceeds the normal benchmark by 27 minutes at P95.",
+        },
+        {
+          label: "Missed-connect signal",
+          explanation:
+            "The strongest downstream customer-facing signal is missed-connect risk.",
+        },
+      ],
     },
     {
       id: "p3",
       title: "Evidence to analyst brief",
       confidence: 0.92,
-      summary: "The evidence fabric consolidates build events and risk paths into an explainable operations brief.",
+      summary:
+        "The evidence fabric consolidates build events and risk paths into an explainable operations brief.",
       nodeIds: ["query-console", "evidence-trace", "analyst-brief"],
       steps: [
-        { label: "Query Console", explanation: "Analyst requests are normalized into graph traversals and evidence lookups." },
-        { label: "Evidence trace store", explanation: "Every surfaced answer is tied back to freshness, confidence, and provenance markers." },
-        { label: "Analyst brief", explanation: "The final brief summarizes top pressure clusters, likely spillover, and explicit source limitations." }
-      ]
-    }
+        {
+          label: "Query Console",
+          explanation:
+            "Analyst requests are normalized into graph traversals and evidence lookups.",
+        },
+        {
+          label: "Evidence trace store",
+          explanation:
+            "Every surfaced answer is tied back to freshness, confidence, and provenance markers.",
+        },
+        {
+          label: "Analyst brief",
+          explanation:
+            "The final brief summarizes top pressure clusters, likely spillover, and explicit source limitations.",
+        },
+      ],
+    },
   ],
   timeline: [
     {
       id: "t1",
       timestamp: "01:02 UTC",
       title: "Weather ingest refreshed",
-      detail: "NOAA public observations refreshed and convective cell signal recalculated for the inbound fixes.",
+      detail:
+        "NOAA public observations refreshed and convective cell signal recalculated for the inbound fixes.",
       severity: "nominal",
-      nodeIds: ["metar-feed", "convective-signal"]
+      nodeIds: ["metar-feed", "convective-signal"],
     },
     {
       id: "t2",
       timestamp: "01:06 UTC",
       title: "Synthetic inbound fields imputed",
-      detail: "Turnaround proxy and crew continuity proxy were recomputed from public arrival delay and benchmark adjacency fields.",
+      detail:
+        "Turnaround proxy and crew continuity proxy were recomputed from public arrival delay and benchmark adjacency fields.",
       severity: "watch",
-      nodeIds: ["gate-turns", "crew-chain"]
+      nodeIds: ["gate-turns", "crew-chain"],
     },
     {
       id: "t3",
       timestamp: "01:11 UTC",
       title: "Inbound community rebuilt",
-      detail: "The graph constructor rebuilt the inbound bank cluster and increased edge density around arrival compression.",
+      detail:
+        "The graph constructor rebuilt the inbound bank cluster and increased edge density around arrival compression.",
       severity: "watch",
-      nodeIds: ["inbound-bank"]
+      nodeIds: ["inbound-bank"],
     },
     {
       id: "t4",
       timestamp: "01:17 UTC",
       title: "Downstream spillover elevated",
-      detail: "Projected missed-connect probability exceeded the watch threshold for the next outbound wave.",
+      detail:
+        "Projected missed-connect probability exceeded the watch threshold for the next outbound wave.",
       severity: "alert",
-      nodeIds: ["impact-cluster", "missed-connect"]
-    }
+      nodeIds: ["impact-cluster", "missed-connect"],
+    },
   ],
   activities: [
-    { id: "a1", agent: "Planner Agent", action: "Ranked graph subqueries", status: "running", latencyMs: 162, tokens: 640, focusNodeId: "planner-agent", timestamp: "01:20:01" },
-    { id: "a2", agent: "Fusion Agent", action: "Hydrated inbound community", status: "complete", latencyMs: 211, tokens: 892, focusNodeId: "fusion-agent", timestamp: "01:19:42" },
-    { id: "a3", agent: "Evidence Indexer", action: "Stored confidence markers", status: "complete", latencyMs: 133, tokens: 304, focusNodeId: "evidence-trace", timestamp: "01:19:15" },
-    { id: "a4", agent: "Impact Synthesizer", action: "Projected outbound exposure", status: "queued", latencyMs: 298, tokens: 710, focusNodeId: "impact-cluster", timestamp: "01:18:58" }
+    {
+      id: "a1",
+      agent: "Planner Agent",
+      action: "Ranked graph subqueries",
+      status: "running",
+      latencyMs: 162,
+      tokens: 640,
+      focusNodeId: "planner-agent",
+      timestamp: "01:20:01",
+    },
+    {
+      id: "a2",
+      agent: "Fusion Agent",
+      action: "Hydrated inbound community",
+      status: "complete",
+      latencyMs: 211,
+      tokens: 892,
+      focusNodeId: "fusion-agent",
+      timestamp: "01:19:42",
+    },
+    {
+      id: "a3",
+      agent: "Evidence Indexer",
+      action: "Stored confidence markers",
+      status: "complete",
+      latencyMs: 133,
+      tokens: 304,
+      focusNodeId: "evidence-trace",
+      timestamp: "01:19:15",
+    },
+    {
+      id: "a4",
+      agent: "Impact Synthesizer",
+      action: "Projected outbound exposure",
+      status: "queued",
+      latencyMs: 298,
+      tokens: 710,
+      focusNodeId: "impact-cluster",
+      timestamp: "01:18:58",
+    },
   ],
   sources: [
     {
@@ -456,7 +784,8 @@ export const demoDataset: DemoDataset = {
       label: "BTS OTP benchmark",
       status: "CACHED PUBLIC DATA",
       freshness: "123 min old",
-      detail: "Historical prior used to impute carrier-delay and turnaround proxies.",
+      detail:
+        "Historical prior used to impute carrier-delay and turnaround proxies.",
       provenance: benchmarkProvenance,
     },
     {
@@ -464,7 +793,8 @@ export const demoDataset: DemoDataset = {
       label: "Synthetic scenario compiler",
       status: "MIXED",
       freshness: "1 min old",
-      detail: "Builds demo-only fields when public inbound data lacks direct operational coverage.",
+      detail:
+        "Builds demo-only fields when public inbound data lacks direct operational coverage.",
       provenance: syntheticProvenance,
     },
     {
@@ -472,22 +802,26 @@ export const demoDataset: DemoDataset = {
       label: "Dependency inference engine",
       status: "DEGRADED",
       freshness: "manual fallback",
-      detail: "Degraded-source label applied when only cached adjacency heuristics are available.",
+      detail:
+        "Degraded-source label applied when only cached adjacency heuristics are available.",
       provenance: inferredProvenance,
-    }
+    },
   ],
   limitations: [
     {
       title: "Public-data only",
-      detail: "This demo does not claim access to crew, gate, maintenance, passenger, or safety systems. Missing operational fields are synthetic or imputed from public sources."
+      detail:
+        "This demo does not claim access to crew, gate, maintenance, passenger, or safety systems. Missing operational fields are synthetic or imputed from public sources.",
     },
     {
       title: "Carrier-delay proxy",
-      detail: "Turnaround and carrier-pressure indicators are labeled as carrier-controllable delay proxies, not direct airline operational telemetry."
+      detail:
+        "Turnaround and carrier-pressure indicators are labeled as carrier-controllable delay proxies, not direct airline operational telemetry.",
     },
     {
       title: "Degraded-source handling",
-      detail: "When upstream public data is unavailable, the console retains degraded-source labels and lowers path confidence rather than hiding uncertainty."
-    }
-  ]
+      detail:
+        "When upstream public data is unavailable, the console retains degraded-source labels and lowers path confidence rather than hiding uncertainty.",
+    },
+  ],
 };
